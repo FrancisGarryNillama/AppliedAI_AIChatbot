@@ -1,0 +1,192 @@
+.shell {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(ellipse 70% 45% at 18% -8%, rgba(255, 179, 71, 0.2) 0%, transparent 62%),
+    radial-gradient(ellipse 80% 55% at 88% 110%, rgba(4, 98, 65, 0.16) 0%, transparent 60%),
+    linear-gradient(180deg, #f7f1e2 0%, #f3ecdc 100%);
+  font-family: var(--font-manrope, Manrope), "Segoe UI", sans-serif;
+}
+
+.card {
+  width: min(100%, 520px);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 22px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 252, 245, 0.92) 100%);
+  border: 1px solid rgba(19, 48, 32, 0.14);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.65),
+    0 18px 40px rgba(19, 48, 32, 0.12),
+    0 32px 80px rgba(19, 48, 32, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 36px;
+  }
+}
+
+.logoWrap {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  height: 56px;
+  width: auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
+.kicker {
+  display: inline-block;
+  margin-bottom: 10px;
+  text-align: center;
+  color: rgba(19, 48, 32, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.heading {
+  margin: 0 0 12px;
+  text-align: center;
+  font-size: clamp(2.2rem, 6vw, 3.25rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: var(--dark-serpent);
+  font-weight: 800;
+}
+
+.desc {
+  margin: 0 auto;
+  max-width: 34ch;
+  text-align: center;
+  color: rgba(19, 48, 32, 0.68);
+  line-height: 1.55;
+  font-size: 1rem;
+}
+
+.loginForm {
+  display: grid;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  color: rgba(19, 48, 32, 0.86);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  min-height: 52px;
+  border: 1px solid rgba(19, 48, 32, 0.12);
+  border-radius: 16px;
+  background: rgba(249, 247, 247, 0.92);
+  color: var(--dark-serpent);
+  padding: 0 16px;
+  font: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.input::placeholder {
+  color: rgba(19, 48, 32, 0.42);
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(4, 98, 65, 0.35);
+  box-shadow: 0 0 0 4px rgba(4, 98, 65, 0.08);
+  background: #fff;
+}
+
+.error {
+  margin: 0;
+  color: #c17110;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  margin-top: 4px;
+}
+
+.primaryButton {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--earth-yellow), var(--saffaron));
+  color: var(--dark-serpent);
+  text-decoration: none;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 0.96rem;
+  box-shadow: 0 10px 20px rgba(255, 179, 71, 0.25);
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.primaryButton:active {
+  transform: scale(0.98);
+}
+
+.footer {
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.82rem;
+  color: rgba(19, 48, 32, 0.74);
+  letter-spacing: 0.01em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.footerLeft {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.footerLeft svg {
+  color: rgba(4, 98, 65, 0.82);
+}
+
+.footer > span:last-child {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding: 16px;
+  }
+
+  .footer {
+    flex-direction: column;
+    text-align: center;
+  }
+}
