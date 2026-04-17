@@ -1,106 +1,145 @@
-# Expense AI (monorepo)
+# Expense AI Monorepo
 
-Lightweight monorepo for an expense-tracking AI project containing a Django backend and a Next.js frontend.
+## 📖 Overview
+Expense AI is a full-stack monorepo designed to support intelligent expense management and analytics. It combines a Django backend API with a modern Next.js frontend to deliver an interactive expense-tracking experience alongside AI-enabled insights.
 
-## Repo layout
+This project is intended for developers, educators, and students who want to explore applied AI systems in a real-world web application context. It is especially useful for teams building finance dashboards, compliance workflows, and data-driven automation with extensible backend and frontend modules.
 
-- `expense-ai-backend/` — Django project (API, server)
-- `expense-ai-frontend/` — Next.js app (React + TypeScript)
+## 🎯 Features
+- Unified Django backend for data, authentication, and business logic
+- Responsive Next.js frontend for dashboard, analytics, and data interaction
+- Modular architecture supporting future AI enhancements and RAG-style workflows
+- Support for local development using SQLite and optional production-grade databases
+- Separation of concerns between backend API and frontend UI for maintainability
 
-## Prerequisites
+## 🛠️ Tech Stack
+| Layer | Technology | Purpose |
+|---|---|---|
+| Backend | Django | Web API, authentication, data models, server logic |
+| Frontend | Next.js | React-based UI, routing, and client-side rendering |
+| Data | SQLite (default) | Local development database |
+| AI/Extensions | Ollama / LangChain / ChromaDB | Optional RAG and local LLM pipeline support |
+| Styling | CSS Modules | Component-level styling |
+| Package Management | npm / pip | Dependency management for frontend and backend |
 
-- Node.js 18+ and npm/yarn/pnpm
-- Python 3.8+ and pip
-- (optional) PostgreSQL or other DB if you don't want the default SQLite
+## 🚀 Getting Started
+### Prerequisites
+- Python 3.10+ installed
+- Node.js 18+ installed
+- npm, yarn, or pnpm available
+- Ollama installed and `llama3` model pulled for RAG experiments (optional)
+- A technical PDF document under `./data/` for local RAG ingestion (optional)
 
-## Backend — quick start
-
-1. Open a terminal and go to the backend folder:
-
-```powershell
-cd expense-ai-backend
+### Installation
+1. Clone the repository:
+```bash
+git clone https://github.com/FrancisGarryNillama/AppliedAI_AIChatbot.git
+cd AppliedAI_AIChatbot
 ```
 
-2. Create and activate a virtual environment, then install dependencies:
-
+2. Install backend dependencies:
 ```powershell
+cd expense-ai-backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-3. Configure environment variables (create `.env` or set in your shell). See `expense-ai-backend/.env.example` if present.
+3. Install frontend dependencies:
+```bash
+cd ..\expense-ai-frontend
+npm install
+```
 
-4. Run migrations and start the development server:
-
+### Run Locally
+#### Backend
 ```powershell
+cd expense-ai-backend
+.\.venv\Scripts\Activate.ps1
 python manage.py migrate
 python manage.py runserver
 ```
+Access the backend API at `http://127.0.0.1:8000`.
 
-By default Django serves at `http://127.0.0.1:8000`.
-
-## Frontend — quick start
-
-1. Open a terminal and go to the frontend folder:
-
-```powershell
+#### Frontend
+```bash
 cd expense-ai-frontend
-```
-
-2. Install dependencies and run the dev server:
-
-```powershell
-npm install
 npm run dev
 ```
+Open the frontend at `http://localhost:3000`.
 
-The Next.js app runs by default at `http://localhost:3000`.
+#### Full Local Flow
+1. Start backend on port `8000`
+2. Start frontend on port `3000`
+3. Use local API configuration or explicit `NEXT_PUBLIC_API_URL`
 
-## Running both locally
+## 📂 Project Structure
+```
+AppliedAI_AIChatbot/
+├── expense-ai-backend/          # Django backend
+│   ├── manage.py
+│   ├── db.sqlite3
+│   ├── requirements.txt
+│   ├── expense_ai/              # Django settings and app wiring
+│   ├── google_drive/            # Google Drive integration
+│   └── billing/                 # Expense and analytics models
+├── expense-ai-frontend/         # Next.js frontend
+│   ├── package.json
+│   ├── src/
+│   │   ├── app/                 # App routes and pages
+│   │   ├── components/          # React UI components
+│   │   └── lib/                 # Shared client utilities
+├── FULL-STACK-AI-DEVELOPMENT-WORKFLOW.txt
+└── README.md
+```
 
-Start the backend first (`8000`) then the frontend (`3000`).
+## 📸 Visual Workflow Diagram
+```mermaid
+flowchart TD
+  A[User Interface] -->|HTTP requests| B[Next.js Frontend]
+  B -->|API calls| C[Django Backend]
+  C -->|CRUD operations| D[SQLite Database]
+  C -->|AI preprocessing| E[Local RAG Pipeline]
+  E -->|Semantic search| F[ChromaDB / Ollama]
+  F -->|Context + answer| B
+  B -->|Render results| A
+```
 
-The frontend supports both local and remote API endpoints via `expense-ai-frontend/.env.example`:
+## 📈 Benchmarks & Performance
+- Local development is optimized for fast iteration using SQLite and hot reload.
+- Backend response times are generally sub-second for standard CRUD requests.
+- Frontend performance is enhanced by Next.js page-level loading and lightweight component composition.
+- Optional AI workflows may require additional compute; use local LLM resources and ChromaDB persistence for best performance.
 
-- `NEXT_PUBLIC_API_URL`: explicit override (highest priority)
-- `NEXT_PUBLIC_LOCAL_API_URL`: local backend endpoint (default `http://localhost:8000`)
-- `NEXT_PUBLIC_REMOTE_API_URL`: deployed backend endpoint fallback
-
-Behavior:
-
-- If `NEXT_PUBLIC_API_URL` is set, the app always uses it.
-- If not set and the app is running on `localhost`/`127.0.0.1`, it uses `NEXT_PUBLIC_LOCAL_API_URL`.
-- Otherwise, it uses `NEXT_PUBLIC_REMOTE_API_URL`.
-
-## Production build
-
-- Backend: set production settings, use a production-ready WSGI server (Gunicorn/uvicorn + reverse proxy) and a proper RDBMS.
-- Frontend: build with `npm run build` and serve statically or via a Node process.
-
-## Environment files
-
-Keep secrets out of source control. Use `.env` files (already listed in `.gitignore`) or a secrets manager.
-
-## Tests
-
-If tests exist, run them from each app root. Example (backend):
-
+## 🧪 Testing
+### Backend Tests
 ```powershell
 cd expense-ai-backend
+.\.venv\Scripts\Activate.ps1
 pytest
 ```
 
-## Contributing
+### Frontend Validation
+```bash
+cd expense-ai-frontend
+npm run lint
+npm run build
+```
 
-1. Create an issue describing the change.
-2. Open a pull request against `main` with a clear description and testing steps.
+### Recommended Checks
+- Verify migrations with `python manage.py makemigrations --check`
+- Validate API endpoints with Postman or browser
+- Confirm frontend routes and client state behavior in the browser
 
-## License
+## 📜 License
+This repository does not currently include a formal license file. Add a `LICENSE` file to define terms of use and distribution.
 
-Add a license file to the repo (e.g., `LICENSE`) or indicate the project license here.
+## 🤝 Contributing
+1. Fork the repository and create a feature branch.
+2. Add a clear description and code comments for changes.
+3. Submit a pull request against `main` with testing steps.
+4. Keep PRs focused on a single domain: backend, frontend, or AI integration.
 
----
-
-If you want, I can: commit this file, add a `requirements.txt`/`package.json` checks, or expand sections with env examples. Which would you like next?
+## 📧 Contact / Support
+For questions, issues, or collaboration requests, please open an issue in the repository. Thank you for reviewing and contributing to this project.
 
