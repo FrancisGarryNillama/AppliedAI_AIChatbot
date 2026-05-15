@@ -15,6 +15,7 @@ export interface UserSession {
   email: string;
   role: UserRole;
   canAccessAnalytics: boolean;
+  driveConnected: boolean;
   allowedPages: string[];
 }
 
@@ -58,9 +59,7 @@ export function isSuperAdmin(): boolean {
 }
 
 export function canAccessPage(page: string): boolean {
-  const session = getStoredSession();
-  if (!session) return false;
-  return session.allowedPages?.includes(page) ?? false;
+  return isAuthenticated();
 }
 
 // ── Server-side session validation ────────────────────────────────────────
@@ -84,6 +83,7 @@ export async function validateSession(apiBase: string): Promise<UserSession | nu
       email:              data.user.email,
       role:               data.user.role,
       canAccessAnalytics: data.user.can_access_analytics,
+      driveConnected:     data.user.drive_connected,
       allowedPages:       data.user.allowed_pages,
     };
     storeSession(session);   // keep localStorage in sync

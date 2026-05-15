@@ -5,9 +5,8 @@ from django.db import models
 
 class AdminUserProfile(models.Model):
     """
-    Stores role and access config for Lifewood predefined admin accounts.
-    Both predefined users auto-connect to the shared lifewoodph.finance@gmail.com
-    Google Drive token — no manual OAuth required.
+    Stores role and access config for Lifewood accounts.
+    Users must now connect their own Google Drive account via OAuth to enable Drive access.
     """
 
     ROLE_CHOICES = [
@@ -26,8 +25,8 @@ class AdminUserProfile(models.Model):
         help_text='System-created predefined account (managed via create_predefined_users)',
     )
     use_shared_google_drive = models.BooleanField(
-        default=True,
-        help_text='When True, uses the shared lifewoodph.finance@gmail.com Drive token',
+        default=False,
+        help_text='Deprecated: Shared Drive access is disabled. Users must authenticate individually.',
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -44,11 +43,8 @@ class AdminUserProfile(models.Model):
 
     @property
     def can_access_analytics(self) -> bool:
-        return self.role == 'super_admin'
+        return True
 
     @property
     def allowed_pages(self) -> list[str]:
-        pages = ['/drive', '/dashboard']
-        if self.role == 'super_admin':
-            pages.append('/analytics')
-        return pages
+        return ['/drive', '/dashboard', '/analytics']

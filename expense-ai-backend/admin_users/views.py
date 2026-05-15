@@ -15,25 +15,33 @@ logger = logging.getLogger('admin_users')
 # HELPERS
 # ─────────────────────────────────────────────
 
-def _user_payload(user) -> dict:
+def _user_payload(user, request=None) -> dict:
     """Build the serialised user dict returned to the frontend."""
-    try:
-        profile = user.admin_profile
-        role = profile.role
-        can_analytics = profile.can_access_analytics
-        allowed = profile.allowed_pages
-    except AdminUserProfile.DoesNotExist:
-        role = 'admin'
-        can_analytics = False
-        allowed = ['/drive', '/dashboard']
+    # All authenticated users now have full access to all pages and analytics.
+    # This removes hardcoded access levels in favor of a shared workspace model.
+    from google_drive.utils import get_user_drive_credentials
+    role = getattr(user.admin_profile, 'role', 'admin') if hasattr(user, 'admin_profile') else 'admin'
+    
+    # Check if a valid connection exists (personal or shared fallback)
+    drive_creds = get_user_drive_credentials(user)
+    drive_connected = drive_creds is not None
+    auth_url = None
+
+    # If not connected and is a predefined user, provide the auth URL
+    if not drive_connected and hasattr(user, 'admin_profile') and user.admin_profile.use_shared_google_drive:
+        if request:
+            from django.urls import reverse
+            auth_url = request.build_absolute_uri(reverse('google_drive_auth'))
 
     return {
         'id':                   user.id,
         'username':             user.username,
         'email':                user.email,
         'role':                 role,
-        'can_access_analytics': can_analytics,
-        'allowed_pages':        allowed,
+        'can_access_analytics': True,
+        'drive_connected':      drive_connected,
+        'auth_url':             auth_url,
+        'allowed_pages':        ['/', '/drive', '/analytics'],
     }
 
 
@@ -72,7 +80,7 @@ def login_view(request):
     login(request, user)
     logger.info('User logged in: %s (%s)', username, user.id)
 
-    return JsonResponse({'success': True, 'user': _user_payload(user)})
+    return JsonResponse({'success': True, 'user': _user_payload(user, request)})
 
 
 # ─────────────────────────────────────────────
@@ -103,10 +111,4 @@ def me_view(request):
     if not request.user or not request.user.is_authenticated:
         return JsonResponse({'authenticated': False}, status=401)
 
-    from google_drive.utils import get_user_drive_credentials
-    drive_connected = get_user_drive_credentials(request.user) is not None
-
-    payload = _user_payload(request.user)
-    payload['drive_connected'] = drive_connected
-
-    return JsonResponse({'authenticated': True, 'user': payload})
+    return JsonResponse({'authenticated': True, 'user': _user_payload(request.user, request)})

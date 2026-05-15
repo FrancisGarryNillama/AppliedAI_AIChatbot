@@ -14,6 +14,7 @@ urlpatterns = [
     path('receipts/save/',          views.save_receipt,              name='save_receipt'),
     path('receipts/processed-ids/', views.list_processed_file_ids,   name='processed_file_ids'),
     path('receipts/process-ocr/',   views.process_ocr,               name='process_ocr'),
+    path('receipts/sync-drive/',    views.sync_drive_receipts,       name='sync_drive_receipts'),
     path('receipts/export/',        views.export_receipts_excel,     name='export_receipts_excel'),
     path('receipts/',               views.list_receipts,             name='list_receipts'),
     path('receipts/<int:receipt_id>/', views.get_receipt,            name='get_receipt'),

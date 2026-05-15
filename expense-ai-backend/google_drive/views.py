@@ -222,7 +222,7 @@ def oauth2callback(request):
         print(f"Token save failed: {e}")
         return redirect(f'{FRONTEND_URL}?error=token_save_failed')
 
-    return redirect(f'{FRONTEND_URL}/drive?status=success')
+    return redirect(f'{FRONTEND_URL}/?status=success')
 
 
 def list_drive_files(request):
@@ -236,7 +236,13 @@ def list_drive_files(request):
     else:
         creds = get_user_drive_credentials(request.user)
         if not creds:
-            return JsonResponse({'error': 'Not authenticated'}, status=401)
+            error_msg = 'Not authenticated'
+            if hasattr(request.user, 'admin_profile') and request.user.admin_profile.use_shared_google_drive:
+                error_msg = (
+                    'System Google Drive connection missing. '
+                    'An administrator must connect their account to Google Drive first.'
+                )
+            return JsonResponse({'error': error_msg}, status=401)
 
     try:
         service = build('drive', 'v3', credentials=creds)
@@ -286,8 +292,13 @@ def get_drive_file_content(request, file_id):
             return JsonResponse({'error': 'No stored Google credentials.'}, status=401)
     else:
         creds = get_user_drive_credentials(request.user)
+        # Fallback for predefined users using the shared system drive
+        if not creds and hasattr(request.user, 'admin_profile'):
+            if request.user.admin_profile.use_shared_google_drive:
+                creds = _get_n8n_credentials()
+
         if not creds:
-            return JsonResponse({'error': 'Not authenticated'}, status=401)
+            return JsonResponse({'error': 'Google Drive not connected'}, status=401)
 
     try:
         service = build('drive', 'v3', credentials=creds)
@@ -314,6 +325,11 @@ def get_drive_file_content(request, file_id):
 @require_POST
 def upload_drive_file(request, folder_id):
     creds = get_user_drive_credentials(request.user)
+    # Fallback for predefined users using the shared system drive
+    if not creds and hasattr(request.user, 'admin_profile'):
+        if request.user.admin_profile.use_shared_google_drive:
+            creds = _get_n8n_credentials()
+
     if not creds:
         return JsonResponse({'error': 'Not authenticated'}, status=401)
 
@@ -362,6 +378,11 @@ def upload_drive_file(request, folder_id):
 @require_POST
 def delete_drive_file(request, file_id):
     creds = get_user_drive_credentials(request.user)
+    # Fallback for predefined users using the shared system drive
+    if not creds and hasattr(request.user, 'admin_profile'):
+        if request.user.admin_profile.use_shared_google_drive:
+            creds = _get_n8n_credentials()
+
     if not creds:
         return JsonResponse({'error': 'Not authenticated'}, status=401)
 

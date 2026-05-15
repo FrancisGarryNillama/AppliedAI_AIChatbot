@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { formatPeso, getApiBaseUrl } from '../../lib/api';
 
@@ -109,8 +109,6 @@ function Avatar({ role }) {
 
 // ── Download button rendered inside agent messages with export metadata ───
 function DownloadButton({ downloadUrl, receiptCount, folderFilter }) {
-  // downloadUrl from backend is the full backend URL already
-  // Make sure it's absolute
   const href = downloadUrl.startsWith('http') ? downloadUrl : `${getApiBaseUrl()}${downloadUrl}`;
 
   return (
@@ -138,7 +136,6 @@ function DownloadButton({ downloadUrl, receiptCount, folderFilter }) {
       onMouseEnter={e => { e.currentTarget.style.background = '#035535'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
       onMouseLeave={e => { e.currentTarget.style.background = 'var(--lw-green)'; e.currentTarget.style.transform = 'translateY(0)'; }}
     >
-      {/* Download icon */}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -152,110 +149,44 @@ function DownloadButton({ downloadUrl, receiptCount, folderFilter }) {
   );
 }
 
-export default function ChatMessage({ role, content, timestamp, error = false, receipts = [], metadata = {} }) {
-  const isUser  = role === 'user';
-  const isAgent = role === 'agent';
-
-  // Check if this is an export response
+export default function ChatMessage({ role, content, timestamp, error, metadata }) {
   const isExport    = metadata?.export === true;
   const downloadUrl = metadata?.download_url;
   const receiptCount = metadata?.receipt_count;
   const folderFilter = metadata?.folder_filter;
 
-  const bubbleStyle = {
-    display: 'inline-flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    width: 'fit-content',
-    minWidth: isUser ? '64px' : '56px',
-    maxWidth: 'min(85%, 420px)',
-    padding: '10px 14px',
-    borderRadius: isUser ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-    background: error
-      ? 'rgba(193,113,16,0.12)'
-      : isUser
-        ? 'var(--lw-accent)'
-        : 'var(--lw-surface-alt)',
-    border: error
-      ? '1px solid rgba(193,113,16,0.3)'
-      : isAgent
-        ? '1px solid var(--glass-border)'
-        : 'none',
-    color: 'var(--lw-dark)',
-    fontFamily: "'Manrope', sans-serif",
-    fontSize: '13px',
-    lineHeight: 1.6,
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'normal',
-    overflowWrap: 'anywhere',
-    textAlign: 'left',
-    boxShadow: isUser ? '0 6px 14px rgba(255,179,71,0.25)' : 'none',
-  };
-
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      alignItems: isUser ? 'flex-end' : 'flex-start',
-      gap: '2px',
-      width: '100%',
+      gap: '4px',
+      alignItems: role === 'user' ? 'flex-end' : 'flex-start',
+      marginBottom: '12px',
     }}>
       <div style={{
         display: 'flex',
         gap: '8px',
+        flexDirection: role === 'user' ? 'row-reverse' : 'row',
         alignItems: 'flex-end',
-        width: '100%',
-        justifyContent: isUser ? 'flex-end' : 'flex-start',
+        maxWidth: '90%',
       }}>
-        {isAgent && <Avatar role="agent" />}
-
+        <Avatar role={role} />
         <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '4px',
-          maxWidth: isUser ? '85%' : '100%',
-          alignItems: isUser ? 'flex-end' : 'flex-start',
+          padding: '12px 16px',
+          borderRadius: role === 'user' ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
+          background: role === 'user' ? 'var(--lw-accent)' : 'var(--lw-sea-salt)',
+          border: role === 'agent' ? '1px solid var(--lw-border)' : 'none',
+          color: 'var(--lw-dark)',
+          fontSize: '13px',
+          lineHeight: 1.5,
+          boxShadow: role === 'agent' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none',
         }}>
-          <div style={bubbleStyle}>
-            {error && (
-              <div style={{ marginBottom: '4px', fontSize: '12px', color: '#C17110' }}>
-                Error
-              </div>
-            )}
-            {renderContent(content)}
-
-            {/* ── Download button for export messages ── */}
-            {isExport && downloadUrl && (
-              <DownloadButton
-                downloadUrl={downloadUrl}
-                receiptCount={receiptCount}
-                folderFilter={folderFilter}
-              />
-            )}
-          </div>
-
-          {receipts.length > 0 && (
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', paddingLeft: '2px' }}>
-              {receipts.map((r, i) => (
-                <span key={i} style={{
-                  background: 'var(--lw-sea-salt)',
-                  border: '1px solid var(--lw-border)',
-                  borderRadius: '6px',
-                  padding: '2px 8px',
-                  fontFamily: "'Manrope', sans-serif",
-                  fontSize: '10px',
-                  color: 'var(--lw-muted)',
-                  cursor: 'default',
-                }}>
-                  Receipt {r.business_name || `#${r.id}`}
-                  {r.total ? ` - ${formatPeso(parseFloat(r.total))}` : ''}
-                </span>
-              ))}
-            </div>
+          {renderContent(content)}
+          {isExport && downloadUrl && (
+            <DownloadButton downloadUrl={downloadUrl} receiptCount={receiptCount} folderFilter={folderFilter} />
           )}
         </div>
       </div>
-
       <Timestamp ts={timestamp} />
     </div>
   );
